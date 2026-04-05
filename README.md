@@ -1,6 +1,10 @@
 # GhostSheet
 GhostSheet is an in-house markdown-to-PDF tool for producing clean PDF cheatsheets and technical notes - mainly used for easy clean access during exam scenarios.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/r0otsec/GhostSheet/refs/heads/main/assets/ghostsheet-logo.png" width="500">
+</p>
+
 ## Features
 
 - **Markdown-first**: write in plain `.md` files with YAML front matter for metadata
@@ -14,6 +18,10 @@ GhostSheet is an in-house markdown-to-PDF tool for producing clean PDF cheatshee
 ## Architecture
 
 The two-pass approach is essential for the cover page. Playwright by default has no mechanism to suppress its header on individual pages via CSS alone, so a second headerless render is produced and the pages are merged with `pypdf`.
+
+<p align="left">
+  <img src="https://raw.githubusercontent.com/r0otsec/GhostSheet/refs/heads/main/assets/ghostsheet-archittecture.png" width="500">
+</p>
 
 ## Installation
 
@@ -54,6 +62,8 @@ python generate.py my-note.md --html --open
 # Generate and open the PDF immediately
 python generate.py my-note.md --open
 ```
+
+After rendering, the PDF will be ready for viewing. As stands, the current template renders a PDF that looks like the example found [here](https://github.com/r0otsec/GhostSheet/blob/main/assets/kerberos-protocol.pdf).
 
 ## Front Matter Reference
 
