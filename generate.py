@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 """
-RootSec Notes & Cheatsheet PDF Generator
-=========================================
-Converts a Markdown file (with YAML front matter) into a professional
-dark-mode reference PDF.
-
 Usage:
     python generate.py example-note.md
     python generate.py my-note.md --output ActiveDirectory-Notes.pdf
@@ -42,8 +37,6 @@ BASE_DIR = Path(__file__).parent
 TEMPLATE_DIR = BASE_DIR / "template"
 ASSETS_DIR = TEMPLATE_DIR / "assets"
 
-# ─── UTILITIES ───────────────────────────────────────────────────────────────
-
 def img_to_b64(path) -> str:
     p = Path(path)
     if not p.exists():
@@ -72,19 +65,12 @@ def rewrite_img_paths(html: str, note_dir: Path) -> str:
         return f'src="{data}"' if data else match.group(0)
     return re.sub(r'src="([^"]+)"', replace, html)
 
-
-# ─── MARKDOWN → HTML ─────────────────────────────────────────────────────────
-
 def _mermaid_fence(source, language, css_class, options, md, **kwargs) -> str:
     """Custom pymdownx fence: wraps mermaid blocks in a div for JS rendering."""
     return f'<div class="mermaid">{source}</div>'
 
 
 def convert_markdown(text: str) -> tuple[str, str]:
-    """
-    Convert Markdown text to HTML.
-    Returns (content_html, toc_html).
-    """
     md = md_lib.Markdown(
         extensions=[
             "fenced_code",
@@ -121,7 +107,7 @@ def convert_markdown(text: str) -> tuple[str, str]:
     return content_html, toc_html
 
 
-# ─── JINJA2 RENDERING ────────────────────────────────────────────────────────
+##### JINJA RENDERING #####
 
 def load_logo(meta: dict, note_dir: Path) -> str:
     """Return base64 data URI for the logo, falling back to logo.png in BASE_DIR."""
@@ -154,9 +140,6 @@ def render_html(meta: dict, content_html: str, toc_html: str, note_dir: Path,
         generation_date=datetime.now().strftime("%B %d, %Y"),
     )
 
-
-# ─── PDF GENERATION ──────────────────────────────────────────────────────────
-
 def build_header_html(logo_data: str = "") -> str:
     if not logo_data:
         return "<span></span>"
@@ -176,14 +159,11 @@ def build_footer_html(author: str, title: str, category: str) -> str:
         '-webkit-print-color-adjust:exact;print-color-adjust:exact;'
         'box-sizing:border-box;padding-bottom:16px;">'
         '<div style="padding:0 72px;">'
-        # ── page number ──────────────────────────────────────────────
         '<div style="text-align:right;padding-bottom:5px;'
         'font-size:9px;color:#b0b8c8;font-weight:500;line-height:1;">'
         '<span class="pageNumber"></span>'
         '</div>'
-        # ── red separator ────────────────────────────────────────────
         '<div style="border-top:1px solid #e63946;margin-bottom:5px;"></div>'
-        # ── footer text row ──────────────────────────────────────────
         '<div style="display:flex;justify-content:space-between;align-items:center;'
         'font-size:9px;color:#6b7280;">'
         f'<span style="font-weight:500;color:#b0b8c8">{author}</span>'
@@ -218,7 +198,6 @@ def html_to_pdf(html_path: str, output_path: str,
         pw_page = browser.new_page()
         pw_page.goto(html_p.resolve().as_uri(), wait_until="networkidle")
 
-        # Wait for any Mermaid diagrams to finish rendering to SVG
         try:
             pw_page.wait_for_function(
                 """() => {
@@ -229,9 +208,8 @@ def html_to_pdf(html_path: str, output_path: str,
                 timeout=20000,
             )
         except Exception:
-            pass  # Continue even if Mermaid times out (e.g. offline)
+            pass
 
-        # Pass 1 — full doc with running header + footer
         pw_page.pdf(
             path=tmp_body,
             format="A4",
@@ -242,7 +220,6 @@ def html_to_pdf(html_path: str, output_path: str,
             margin={"top": "88px", "bottom": "80px", "left": "0px", "right": "0px"},
         )
 
-        # Pass 2 — full doc, no header/footer, zero margins (clean cover)
         pw_page.pdf(
             path=tmp_cover,
             format="A4",
@@ -253,21 +230,17 @@ def html_to_pdf(html_path: str, output_path: str,
 
         browser.close()
 
-    # Merge: page 1 from the clean pass + pages 2+ from the header pass
     try:
         body_count = len(PdfReader(tmp_body).pages)
         writer = PdfWriter()
-        writer.append(tmp_cover, pages=(0, 1))          # cover — no header
+        writer.append(tmp_cover, pages=(0, 1))         
         if body_count > 1:
-            writer.append(tmp_body, pages=(1, body_count))  # body pages — with header
+            writer.append(tmp_body, pages=(1, body_count))
         with open(output_path, "wb") as f:
             writer.write(f)
     finally:
         Path(tmp_body).unlink(missing_ok=True)
         Path(tmp_cover).unlink(missing_ok=True)
-
-
-# ─── MAIN ────────────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(

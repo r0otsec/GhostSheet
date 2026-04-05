@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ meta.title }}</title>
+  <style>{{ css_content }}</style>
+</head>
+<body>
+
+  {# COVER PAGE #}
+  <div class="notes-cover">
+    <div class="cover-accent-line"></div>
+    <div class="cover-bottom-bar"></div>
+
+    <div class="notes-cover-content">
+
+      {# Logo #}
+      <div class="cover-logo-wrap">
+        {% if logo_data %}
+          <img class="cover-logo" src="{{ logo_data }}" alt="RootSec">
+        {% else %}
+          <div class="cover-logo-text">ROOTSEC</div>
+        {% endif %}
+      </div>
+
+      {# Rule #}
+      <div class="cover-rule"></div>
+
+      {# Category tag #}
+      <div class="notes-category-tag">{{ meta.category }}</div>
+
+      {# Title + subtitle #}
+      <h1 class="notes-title">{{ meta.title }}</h1>
+      {% if meta.subtitle %}
+      <p class="notes-subtitle">{{ meta.subtitle }}</p>
+      {% endif %}
+
+      {# Meta row with dividers #}
+      <div class="notes-cover-meta">
+        <div class="notes-cover-meta-item">
+          <span class="meta-label">Author</span>
+          <span class="meta-value">{{ meta.author }}</span>
+        </div>
+        <div class="cover-meta-divider"></div>
+        <div class="notes-cover-meta-item">
+          <span class="meta-label">Version</span>
+          <span class="meta-value">v{{ meta.version }}</span>
+        </div>
+        <div class="cover-meta-divider"></div>
+        <div class="notes-cover-meta-item">
+          <span class="meta-label">Category</span>
+          <span class="meta-value">{{ meta.category }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {% if toc_html %}
+  <div class="toc-wrapper page-break">
+    <h2 class="toc-title">Contents</h2>
+    {{ toc_html | safe }}
+  </div>
+  {% endif %}
+
+  <div class="notes-content{% if meta.two_column %} two-column{% endif %} page-break">
+    {{ content_html | safe }}
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background:            '#101319',
+        mainBkg:               '#1c2128',
+        primaryColor:          '#1c2128',
+        primaryTextColor:      '#d5dae3',
+        primaryBorderColor:    '#52b4b4',
+        secondaryColor:        '#161b22',
+        tertiaryColor:         '#161b22',
+        lineColor:             '#52b4b4',
+        textColor:             '#d5dae3',
+        edgeLabelBackground:   '#161b22',
+        clusterBkg:            '#161b22',
+        clusterBorder:         '#22272f',
+        titleColor:            '#d5dae3',
+        /* sequence diagrams */
+        actorBkg:              '#1c2128',
+        actorBorder:           '#52b4b4',
+        actorTextColor:        '#d5dae3',
+        actorLineColor:        '#75869f',
+        signalColor:           '#52b4b4',
+        signalTextColor:       '#d5dae3',
+        noteBkgColor:          '#161b22',
+        noteTextColor:         '#d5dae3',
+        noteBorderColor:       '#22272f',
+        activationBorderColor: '#52b4b4',
+        activationBkgColor:    '#1c2128',
+        sequenceNumberColor:   '#d5dae3',
+        /* sizing */
+        fontSize:              '11px',
+        fontFamily:            "Inter, 'Segoe UI', sans-serif",
+      },
+    });
+  </script>
+
+</body>
+</html>
