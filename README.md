@@ -3,38 +3,15 @@ GhostSheet is an in-house markdown-to-PDF tool for producing clean PDF cheatshee
 
 ## Features
 
-- **Markdown-first** — write in plain `.md` files with YAML front matter for metadata
-- **Dark theme** — deep navy background, Atlas syntax highlighting, styled admonition boxes
-- **Mermaid diagrams** — flowcharts, sequence diagrams, and more can render directly in the PDF
-- **Two-column layout** — optional via a single front matter flag
-- **Auto cover page** — logo, category tag, title, subtitle, and metadata row generated automatically
-- **Running header/footer** — logo top-right, red separator line, author/title/category in footer
-- **Clean cover** — two-pass PDF generation ensures the cover page has no header or footer overlay
+- **Markdown-first**: write in plain `.md` files with YAML front matter for metadata
+- **Dark theme**: deep navy background, Atlas syntax highlighting, styled admonition boxes
+- **Mermaid diagrams**: flowcharts, sequence diagrams, and more can render directly in the PDF
+- **Two-column layout**: optional via a single front matter flag
+- **Auto cover page**: logo, category tag, title, subtitle, and metadata row generated automatically
+- **Running header/footer**: logo top-right, red separator line, author/title/category in footer
+- **Clean cover**: two-pass PDF generation ensures the cover page has no header or footer overlay
 
 ## Architecture
-
-```mermaid
-flowchart TD
-    A["your-note.md\nMarkdown + YAML front matter"] --> B
-
-    subgraph generate.py
-        B["1 · Parse front matter\npython-frontmatter"]
-        B --> C["2 · Convert Markdown → HTML\npython-markdown + pymdownx\nMermaid blocks → div.mermaid"]
-        C --> D["3 · Render Jinja2 template\nnote.html.j2 + style.css\nLogo, CSS, content injected"]
-        D --> E["4 · Write temporary HTML file"]
-    end
-
-    E --> PW
-
-    subgraph PW["Playwright / Chromium"]
-        P1["Pass 1 — full doc\nwith running header + footer\n88px top margin"]
-        P2["Pass 2 — full doc\nno header or footer\n0px margin — clean cover"]
-        P1 --> M["pypdf merge\nCover = Pass 2 page 1\nBody = Pass 1 pages 2+"]
-        P2 --> M
-    end
-
-    M --> OUT["output.pdf"]
-```
 
 The two-pass approach is essential for the cover page — Playwright by default has no mechanism to suppress its header on individual pages via CSS alone, so a second headerless render is produced and the pages are merged with `pypdf`.
 
