@@ -13,7 +13,7 @@ GhostSheet is an in-house markdown-to-PDF tool for producing clean PDF cheatshee
 
 ## Architecture
 
-The two-pass approach is essential for the cover page — Playwright by default has no mechanism to suppress its header on individual pages via CSS alone, so a second headerless render is produced and the pages are merged with `pypdf`.
+The two-pass approach is essential for the cover page. Playwright by default has no mechanism to suppress its header on individual pages via CSS alone, so a second headerless render is produced and the pages are merged with `pypdf`.
 
 ## Installation
 
@@ -88,10 +88,10 @@ two_column: false # optional: enable two-column layout for the content pages
 ### Headings & Structure
 
 ```markdown
-# Top-level heading      — large, white, full-width underline
-## Section heading        — red accent bar, uppercase treatment
-### Sub-section           — muted grey, smaller
-#### Minor heading        — tiny, uppercase, letter-spaced
+# Top-level heading      large, white, full-width underline
+## Section heading       red accent bar, uppercase treatment
+### Sub-section          muted grey, smaller
+#### Minor heading       tiny, uppercase, letter-spaced
 ```
 
 The table of contents is generated automatically from `##` and `###` headings and appears as its own page after the cover.
@@ -227,7 +227,7 @@ Jinja2 templates are HTML files with embedded logic. `generate.py` renders `note
 | `{% for item in list %}...{% endfor %}` | Loop | `{% for item in items %}` |
 | `{# comment #}` | Template comment | `{# not rendered #}` |
 
-The `| safe` filter tells Jinja2 not to escape HTML — required for any variable that already contains rendered HTML (like `content_html` and `toc_html`).
+The `| safe` filter tells Jinja2 not to escape HTML which is required for any variable that already contains rendered HTML (like `content_html` and `toc_html`).
 
 ### Variables Available in `note.html.j2`
 
@@ -244,7 +244,7 @@ These are passed by `generate.py` and available anywhere in the template:
 
 ### Adding a New Section to the Cover Page
 
-The cover page is the first `<div>` in `note.html.j2`. To add a new field — for example a `classification` label — you would:
+The cover page is the first `<div>` in `note.html.j2`. To add a new field for example a `classification` label you would:
 
 **1. Add the field to your front matter:**
 ```yaml
@@ -282,7 +282,6 @@ To insert a new full page (e.g. a "References" page between the TOC and content)
 **1. Add your HTML to `note.html.j2`** between the TOC and content divs:
 
 ```html
-{# ── REFERENCES PAGE ──────────────────────────────────── #}
 <div class="references-page page-break">
   <h2>External References</h2>
   <p>{{ meta.references_note | default('') }}</p>
@@ -293,35 +292,29 @@ The `page-break` class (already defined in `style.css`) forces this element to s
 
 ## CSS Design Tokens
 
-All colours are defined as CSS custom properties at the top of `style.css`. Change these variables and every element that uses them updates automatically — you never need to hunt through individual selectors.
+All colours are defined as CSS custom properties at the top of `style.css`. Change these variables and every element that uses them updates automatically.
 
 ```css
 :root {
-  /* Backgrounds */
   --bg-page:       #0a0e14;   /* page background */
   --bg-primary:    #0d1117;   /* base surface */
   --bg-secondary:  #161b22;   /* raised surface */
   --bg-card:       #1c2128;   /* card / panel */
   --bg-code:       #101319;   /* code block background (Atlas) */
 
-  /* Text */
   --text-primary:  #f0f6fc;   /* headings, strong */
   --text-secondary:#8b949e;   /* body text */
   --text-muted:    #484f58;   /* labels, placeholders */
 
-  /* Accent */
   --accent:        #e63946;   /* red — cover, h2 bars, admonition borders */
   --accent-dim:    #c1121f;   /* darker red for gradients */
 
-  /* Borders */
   --border:        #30363d;
   --border-light:  #21262d;
 
-  /* Typography */
   --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
-  /* Admonition box colours */
   --note-border:   #2196f3;
   --tip-border:    #4caf50;
   --warn-border:   #f5c518;
